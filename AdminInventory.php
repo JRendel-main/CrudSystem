@@ -1,6 +1,43 @@
 <?php
 require_once 'auth_session.php';
+require_once 'helpers/conn_helpers.php';
+
+// Define error messages
+$errorMessages = [
+    "emptyfields" => "Please fill in all fields.",
+    "sqlerror" => "There is an error in the database.",
+    "productnametaken" => "Product name is already taken.",
+    "notanimage" => "The file is not an image.",
+    "fileexists" => "The file already exists.",
+    "filetoolarge" => "The file is too large.",
+    "invalidfiletype" => "Invalid file type."
+];
+
+// Display error message if error parameter is set
+if (isset($_GET['error']) && isset($errorMessages[$_GET['error']])) {
+    echo "<script>alert('" . $errorMessages[$_GET['error']] . "')</script>";
+    echo "<script>window.location.href = window.location.href.split('?')[0];</script>";
+}
+
+// Display success message if addproduct parameter is set
+if (isset($_GET["addproduct"])) {
+    echo "<script>alert('Product added successfully.')</script>";
+    echo "<script>window.location.href = window.location.href.split('?')[0];</script>";
+}
+
+// Display success message if deleteproduct parameter is set
+if (isset($_GET["deleteproduct"])) {
+    echo "<script>alert('Product deleted successfully.')</script>";
+    echo "<script>window.location.href = window.location.href.split('?')[0];</script>";
+}
+
+// Display success message if editproduct parameter is set
+if (isset($_GET["editproduct"])) {
+    echo "<script>alert('Product edited successfully.')</script>";
+    echo "<script>window.location.href = window.location.href.split('?')[0];</script>";
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -85,7 +122,73 @@ require_once 'auth_session.php';
 
             <div class="container">
                 <div class="row">
-                    <!-- Products will be added here -->
+                    <!-- Product Cards -->
+                    <?php
+                    $sql = 'SELECT * FROM product_table';
+                    $result = mysqli_query($conn, $sql);
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $product_id = $row['product_id'];
+                        $product_image = $row['product_image'];
+                        $product_name = $row['product_name'];
+                        $product_category = $row['product_category'];
+                        $price = $row['price'];
+                        $stock = $row['stock'];
+
+                        ?>
+                    <div class="col-12">
+                        <div class="card mb-3">
+                            <div class="row g-0 align-items-center">
+                                <div class="col-md-3 col-lg-2">
+                                    <input type="hidden" id="product_id" name="product_id"
+                                        value="<?php echo $product_id; ?>">
+                                    <img src="img/products/<?php echo $product_image; ?>"
+                                        class="img-fluid rounded-start product-img-custom" alt="Product Image">
+                                </div>
+                                <div class="col-md-9 col-lg-10">
+                                    <div class="card-body">
+                                        <p class="card-text"><small class="text-category">
+                                                <?php echo $product_category; ?>
+                                            </small></p>
+                                        <h5 class="card-title">
+                                            <?php echo $product_name; ?>
+                                        </h5>
+                                        <p class="card-text">₱
+                                            <?php echo $price; ?>
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="card-text"><small class="text-category">In stock x
+                                                    <?php echo $stock; ?>
+                                                </small></p>
+                                            <!-- Edit button with data attributes -->
+                                            <div class="d-flex gap-3">
+                                                <button class="btn btn-edit" type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#editProductModal"
+                                                    data-product-name="<?php echo $product_name; ?>"
+                                                    data-product-id="<?php echo $product_id; ?>"
+                                                    data-product-category="<?php echo $product_category; ?>"
+                                                    data-price="<?php echo $price; ?>" data-stock="<?php echo $stock;
+                                                           ?>">
+                                                    Edit
+                                                </button>
+                                                <button class="btn btn-delete" type="button" data-bs-toggle="modal"
+                                                    data-product-id="<?php echo $product_id; ?>"
+                                                    data-bs-target="#deleteProductModal">
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                    }
+                    ?>
+
+
+
+
                 </div>
             </div>
 
@@ -93,39 +196,47 @@ require_once 'auth_session.php';
     </div>
 
     <!-- Add Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel"
+    <div class=" modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header text-center">
-                    <h5 class="modal-title w-100" id="addProductModalLabel">Add New Product</h5>
+                    <h5 class="modal-title w-100" id="addProductModalLabel">Add
+                        New Product</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
-                    <form id="addProductForm">
-                        <div class="mb-3">
-                            <label for="productImage" class="form-label">Product Image</label>
-                            <input type="file" class="form-control" id="productImage" required accept="image/*">
+                    <form id="addProductForm" method="post" action="./controllers/addProduct.php"
+                        enctype="multipart/form-data">
+                        <div class=" mb-3">
+                            <label for="productImage" class="form-label">Product
+                                Image</label>
+                            <input type="file" class="form-control" id="product_image" required accept="image/*"
+                                name="product_image">
                         </div>
                         <div class="mb-3">
                             <label for="productCategory" class="form-label">Product Category</label>
-                            <input type="text" class="form-control" id="productCategory" required>
+                            <input type="text" class="form-control" id="product_category" name="product_category"
+                                required>
                         </div>
                         <div class="mb-3">
-                            <label for="productName" class="form-label">Product Name</label>
-                            <input type="text" class="form-control" id="productName" required>
+                            <label for="productName" class="form-label">Product
+                                Name</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name" required>
                         </div>
                         <div class="mb-3">
                             <label for="productPrice" class="form-label">Price</label>
-                            <input type="number" class="form-control" id="productPrice" required>
+                            <input type="number" class="form-control" id="price" name="price" required>
                         </div>
                         <div class="mb-3">
-                            <label for="productStock" class="form-label">Stock Level</label>
-                            <input type="number" class="form-control" id="productStock" required>
+                            <label for="productStock" class="form-label">Stock
+                                Level</label>
+                            <input type="number" class="form-control" id="stock" name="stock" required>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-save-product">Save Product</button>
+                            <button type="submit" class="btn btn-save-product">Save
+                                Product</button>
                         </div>
                     </form>
                 </div>
@@ -133,9 +244,86 @@ require_once 'auth_session.php';
         </div>
     </div>
 
+    <!-- Edit modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h5 class="modal-title w-100" id="editProductModalLabel">Edit
+                        Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="editProductForm" method="post" action="./controllers/editProduct.php"
+                        enctype="multipart/form-data">
+                        <input type="hidden" id="product_id" name="product_id">
+                        <div class=" mb-3">
+                            <label for="productImage" class="form-label">Product
+                                Image</label>
+                            <input type="file" class="form-control" id="product_image" accept="image/*"
+                                name="product_image">
+                        </div>
+                        <div class="mb-3">
+                            <label for="productCategory" class="form-label">Product
+                                Category</label>
+                            <input type="text" class="form-control" id="product_category" name="product_category">
+                        </div>
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Product
+                                Name</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="productPrice" class="form-label
+                            ">Price</label>
+                            <input type="number" class="form-control" id="price" name="price">
+                        </div>
+                        <div class="mb-3">
+                            <label for="productStock" class="form-label
+                            ">Stock Level</label>
+                            <input type="number" class="form-control" id="stock" name="stock">
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-save-product">Save
+                                Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete modal -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h5 class="modal-title w-100" id="deleteProductModalLabel">Delete
+                        Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="deleteProductForm" method="post" action="./controllers/deleteProduct.php">
+                        <input type="hidden" id="delete_product_id" name="product_id">
+                        <p class="text-center">Are you sure you want to delete this product?</p>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-danger btn-delete-product">Delete
+                                Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous">
-        </script>
+    </script>
     <script src="AdminInventory.js"></script>
 </body>
 
