@@ -86,7 +86,7 @@ class Users
         }
     }
 
-    public function login()
+    public function login($role)
     {
         //Sanitize POST data
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -112,7 +112,7 @@ class Users
             $loggedInUser = $this->userModel->login($data['name/email'], $data['usersPwd']);
             if ($loggedInUser) {
                 //Create session
-                $this->createUserSession($loggedInUser);
+                $this->createUserSession($loggedInUser, $role);
             } else {
                 echo '<script>
                 alert("Password Incorrect");
@@ -127,12 +127,17 @@ class Users
         }
     }
 
-    public function createUserSession($user)
+    public function createUserSession($user, $role)
     {
         $_SESSION['usersId'] = $user->usersId;
         $_SESSION['usersName'] = $user->usersName;
         $_SESSION['usersEmail'] = $user->usersEmail;
-        redirect("../AdminInventory.php");
+        $_SESSION['role'] = $role;
+        if ($role == 'admin') {
+            redirect("../AdminInventory.php");
+        } else {
+            redirect("../CustomerInventory.php");
+        }
     }
 
     public function logout()
@@ -140,6 +145,7 @@ class Users
         unset($_SESSION['usersId']);
         unset($_SESSION['usersName']);
         unset($_SESSION['usersEmail']);
+        unset($_SESSION['role']);
         session_destroy();
         redirect("../AdminInventory.php");
     }
@@ -154,13 +160,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $init->register();
             echo 'Hello';
             break;
-        case 'login':
-            $init->login();
+        case 'login_admin':
+            $init->login('admin');
+            break;
+        case 'login_user':
+            $init->login('user');
             break;
         case 'logout':
             $init->logout();
             break;
         default:
-            redirect("../AdminInventory.php");
+            redirect("../login.php");
     }
 }

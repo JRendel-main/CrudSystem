@@ -1,16 +1,19 @@
 <?php
 require_once '../libraries/CustomerDatabase.php';
 
-class CustomerUser {
+class CustomerUser
+{
 
     private $db;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->db = new CustomerDatabase;
     }
 
     //Find user by email or username
-    public function findUserByEmailOrUsername($email, $username){
+    public function findUserByEmailOrUsername($email, $username)
+    {
         $this->db->query('SELECT * FROM Customerusers WHERE usersUid = :username OR usersEmail = :email');
         $this->db->bind(':username', $username);
         $this->db->bind(':email', $email);
@@ -18,15 +21,16 @@ class CustomerUser {
         $row = $this->db->single();
 
         //Check row
-        if($this->db->rowCount() > 0){
+        if ($this->db->rowCount() > 0) {
             return $row;
-        }else{
+        } else {
             return false;
         }
     }
 
     //Register User
-    public function register($data){
+    public function register($data)
+    {
         $this->db->query('INSERT INTO Customerusers (usersName, usersEmail, usersUid, usersPwd) 
         VALUES (:name, :email, :Uid, :password)');
         //Bind values
@@ -36,37 +40,40 @@ class CustomerUser {
         $this->db->bind(':password', $data['usersPwd']);
 
         //Execute
-        if($this->db->execute()){
+        if ($this->db->execute()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     //Login user
-    public function login($nameOrEmail, $password){
+    public function login($nameOrEmail, $password)
+    {
         $row = $this->findUserByEmailOrUsername($nameOrEmail, $nameOrEmail);
 
-        if($row == false) return false;
+        if ($row == false)
+            return false;
 
         $hashedPassword = $row->usersPwd;
-        if(password_verify($password, $hashedPassword)){
+        if (password_verify($password, $hashedPassword)) {
             return $row;
-        }else{
+        } else {
             return false;
         }
     }
 
     //Reset Password
-    public function resetPassword($newPwdHash, $tokenEmail){
+    public function resetPassword($newPwdHash, $tokenEmail)
+    {
         $this->db->query('UPDATE Customerusers SET usersPwd=:pwd WHERE usersEmail=:email');
         $this->db->bind(':pwd', $newPwdHash);
         $this->db->bind(':email', $tokenEmail);
 
         //Execute
-        if($this->db->execute()){
+        if ($this->db->execute()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

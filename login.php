@@ -36,7 +36,7 @@ include_once './helpers/session_helper.php';
                     <div id="form_content_container" class="bg-white p-4 rounded">
                         <input type="hidden" name="type" value="login">
                         <div id="form_content_inner_container">
-                            <input type="hidden" name="type" value="login">
+                            <input type="hidden" name="type" value="login_admin">
                             <input type="text" class="form-control mb-3" name="name/email"
                                 placeholder="Username/Email..." autofocus="true" />
                             <input type="password" class="form-control mb-3" name="usersPwd"

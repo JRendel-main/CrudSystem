@@ -55,7 +55,7 @@
             <div class="container">
                 <?php
                 // Connect to database
-                $conn = mysqli_connect('localhost', 'root', '', 'customer-feedback');
+                $conn = mysqli_connect('localhost', 'root', '', 'login_system');
 
                 // Check connection
                 if (!$conn) {
@@ -87,7 +87,8 @@
                             <input type="hidden" name="feedback_id" value="<?php echo $row['FeedbackID']; ?>">
                             <div class="form-group">
                                 <label for="reply">Reply:</label>
-                                <textarea class="form-control" id="reply" name="reply" rows="3"></textarea>
+                                <textarea class="form-control" id="reply" name="reply"
+                                    rows="3"><?php echo $row['reply']; ?></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">Reply</button>
                         </form>

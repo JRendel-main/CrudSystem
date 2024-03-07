@@ -1,6 +1,12 @@
 <?php
-require_once 'auth_session.php';
 require_once 'helpers/conn_helpers.php';
+
+// check if user is logged in, and check if user is an admin
+session_start();
+if (!isset($_SESSION["usersName"]) || $_SESSION["role"] !== "admin") {
+    header("Location: login.php");
+    exit();
+}
 
 // Define error messages
 $errorMessages = [
@@ -135,54 +141,54 @@ if (isset($_GET["editproduct"])) {
                         $stock = $row['stock'];
 
                         ?>
-                    <div class="col-12">
-                        <div class="card mb-3">
-                            <div class="row g-0 align-items-center">
-                                <div class="col-md-3 col-lg-2">
-                                    <input type="hidden" id="product_id" name="product_id"
-                                        value="<?php echo $product_id; ?>">
-                                    <img src="img/products/<?php echo $product_image; ?>"
-                                        class="img-fluid rounded-start product-img-custom" alt="Product Image">
-                                </div>
-                                <div class="col-md-9 col-lg-10">
-                                    <div class="card-body">
-                                        <p class="card-text"><small class="text-category">
-                                                <?php echo $product_category; ?>
-                                            </small></p>
-                                        <h5 class="card-title">
-                                            <?php echo $product_name; ?>
-                                        </h5>
-                                        <p class="card-text">₱
-                                            <?php echo $price; ?>
-                                        </p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <p class="card-text"><small class="text-category">In stock x
-                                                    <?php echo $stock; ?>
+                        <div class="col-12">
+                            <div class="card mb-3">
+                                <div class="row g-0 align-items-center">
+                                    <div class="col-md-3 col-lg-2">
+                                        <input type="hidden" id="product_id" name="product_id"
+                                            value="<?php echo $product_id; ?>">
+                                        <img src=" img/products/<?php echo $product_image; ?>"
+                                            class="img-fluid rounded-start product-img-custom" alt="Product Image">
+                                    </div>
+                                    <div class="col-md-9 col-lg-10">
+                                        <div class="card-body">
+                                            <p class="card-text"><small class="text-category">
+                                                    <?php echo $product_category; ?>
                                                 </small></p>
-                                            <!-- Edit button with data attributes -->
-                                            <div class="d-flex gap-3">
-                                                <button class="btn btn-edit" type="button" data-bs-toggle="modal"
-                                                    data-bs-target="#editProductModal"
-                                                    data-product-name="<?php echo $product_name; ?>"
-                                                    data-product-id="<?php echo $product_id; ?>"
-                                                    data-product-category="<?php echo $product_category; ?>"
-                                                    data-price="<?php echo $price; ?>" data-stock="<?php echo $stock;
+                                            <h5 class="card-title">
+                                                <?php echo $product_name; ?>
+                                            </h5>
+                                            <p class="card-text">₱
+                                                <?php echo $price; ?>
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="card-text"><small class="text-category">In stock x
+                                                        <?php echo $stock; ?>
+                                                    </small></p>
+                                                <!-- Edit button with data attributes -->
+                                                <div class="d-flex gap-3">
+                                                    <button class="btn btn-edit" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#editProductModal"
+                                                        data-product-name="<?php echo $product_name; ?>"
+                                                        data-product-id=" <?php echo $product_id; ?>"
+                                                        data-product-category="<?php echo $product_category; ?>"
+                                                        data-price=" <?php echo $price; ?>" data-stock="<?php echo $stock;
                                                            ?>">
-                                                    Edit
-                                                </button>
-                                                <button class="btn btn-delete" type="button" data-bs-toggle="modal"
-                                                    data-product-id="<?php echo $product_id; ?>"
-                                                    data-bs-target="#deleteProductModal">
-                                                    Delete
-                                                </button>
+                                                        Edit
+                                                    </button>
+                                                    <button class="btn btn-delete" type="button" data-bs-toggle="modal"
+                                                        data-product-id="<?php echo $product_id; ?>"
+                                                        data-bs-target=" #deleteProductModal">
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <?php
+                        <?php
                     }
                     ?>
 
@@ -323,7 +329,7 @@ if (isset($_GET["editproduct"])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous">
-    </script>
+        </script>
     <script src="AdminInventory.js"></script>
 </body>
 

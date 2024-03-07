@@ -1,3 +1,14 @@
+<?php
+// Start the session and check if the user is authenticated, and if role is user
+session_start();
+if (!isset($_SESSION["usersName"]) || $_SESSION['role'] != 'user') {
+    // header("Location: CustomerLogin.php");
+    echo '<script>
+    alert("You are not authorized to access this page", ' . $_SESSION["role"] . ');
+    </script>';
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,13 +25,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-   
+
 </head>
 
 <body>
     <div class="wrapper">
         <aside id="sidebar">
-            
+
             <div class="sidebar-logo">
                 <img src="img/CircularLogo.jpg" alt="Logo"
                     style="width: 100%; max-width: 120px; display: block; margin: 0 auto;">
@@ -68,13 +79,68 @@
                     </p>
                     <a href="CustomerFeedback2.php" class="btn btn-primary btn-feedback">ADD FEEDBACK</a>
                 </div>
+            </div>
+            <!-- Admin reply -->
+            <div class="container">
+                <?php
+                // Connect to database
+                $conn = mysqli_connect('localhost', 'root', '', 'login_system');
+
+                // Check connection
+                if (!$conn) {
+                    die("Connection failed: " . mysqli_connect_error());
+                }
+
+                // Retrieve feedbacks from the database
+                $sql = "SELECT * FROM customerfeedbacks WHERE Email = '" . $_SESSION['usersEmail'] . "'";
+                $result = mysqli_query($conn, $sql);
+
+                if (mysqli_num_rows($result) > 0) {
+
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        ?>
+                <!-- Add a chat like conversation here the reply from admin-->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Feedback from
+                        <?php echo $row['FeedbackTitle']; ?>
+                    </div>
+                    <div class="chat_box">
+                        <div class="customer_chat">
+                            <div class="chat_bubble customer_bubble">
+                                <?php echo $row['FeedbackContent']; ?> <br />
+                                <small class="text-muted">
+                                    You
+                                </small>
+                            </div>
+                        </div>
+                        <div class="admin_chat">
+                            <div class="chat_bubble">
+                                <div class="chat_bubble admin_bubble">
+                                    <?php echo $row['reply']; ?> <br />
+                                    <small class="text-muted
+                                            ">
+                                        Admin
+                                    </small>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <?php
+                    }
+                } else {
+                    echo "No feedbacks found.";
+                }
+                ?>
         </div>
     </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-        crossorigin="anonymous"></script>
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous">
+    </script>
     <script src="AdminInventory.js"></script>
 
 </body>
