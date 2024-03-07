@@ -10,21 +10,35 @@ class CustomerUser
     {
         $this->db = new CustomerDatabase;
     }
-
     //Find user by email or username
-    public function findUserByEmailOrUsername($email, $username)
+    public function findUserByEmailOrUsername($email, $username, $role)
     {
-        $this->db->query('SELECT * FROM Customerusers WHERE usersUid = :username OR usersEmail = :email');
-        $this->db->bind(':username', $username);
-        $this->db->bind(':email', $email);
+        if ($role === 'user') {
+            $this->db->query('SELECT * FROM Customerusers WHERE usersUid = :username OR usersEmail = :email');
+            $this->db->bind(':username', $username);
+            $this->db->bind(':email', $email);
 
-        $row = $this->db->single();
+            $row = $this->db->single();
 
-        //Check row
-        if ($this->db->rowCount() > 0) {
-            return $row;
+            //Check row
+            if ($this->db->rowCount() > 0) {
+                return $row;
+            } else {
+                return false;
+            }
         } else {
-            return false;
+            $this->db->query('SELECT * FROM Adminusers WHERE usersUid = :username OR usersEmail = :email');
+            $this->db->bind(':username', $username);
+            $this->db->bind(':email', $email);
+
+            $row = $this->db->single();
+
+            //Check row
+            if ($this->db->rowCount() > 0) {
+                return $row;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -48,9 +62,9 @@ class CustomerUser
     }
 
     //Login user
-    public function login($nameOrEmail, $password)
+    public function login($nameOrEmail, $password, $role)
     {
-        $row = $this->findUserByEmailOrUsername($nameOrEmail, $nameOrEmail);
+        $row = $this->findUserByEmailOrUsername($nameOrEmail, $nameOrEmail, $role);
 
         if ($row == false)
             return false;

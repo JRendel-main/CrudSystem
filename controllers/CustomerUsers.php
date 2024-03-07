@@ -26,7 +26,8 @@ class CustomerUsers
             'usersEmail' => trim($_POST['usersEmail']),
             'usersUid' => trim($_POST['usersUid']),
             'usersPwd' => trim($_POST['usersPwd']),
-            'pwdRepeat' => trim($_POST['pwdRepeat'])
+            'pwdRepeat' => trim($_POST['pwdRepeat']),
+            'role' => 'user'
         ];
 
         //Validate inputs
@@ -67,7 +68,7 @@ class CustomerUsers
         }
 
         //User with the same email or password already exists
-        if ($this->userModel->findUserByEmailOrUsername($data['usersEmail'], $data['usersName'])) {
+        if ($this->userModel->findUserByEmailOrUsername($data['usersEmail'], $data['usersName'], $data['role'])) {
             echo '<script>
                 alert("Username or email already taken");
                 window.location.href = "../Customersignup.php";
@@ -86,7 +87,7 @@ class CustomerUsers
         }
     }
 
-    public function login()
+    public function login($role)
     {
         //Sanitize POST data
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -94,7 +95,8 @@ class CustomerUsers
         //Init data
         $data = [
             'name/email' => trim($_POST['name/email']),
-            'usersPwd' => trim($_POST['usersPwd'])
+            'usersPwd' => trim($_POST['usersPwd']),
+            'role' => $role
         ];
 
         if (empty($data['name/email']) || empty($data['usersPwd'])) {
@@ -106,9 +108,9 @@ class CustomerUsers
         }
 
         //Check for user/email
-        if ($this->userModel->findUserByEmailOrUsername($data['name/email'], $data['name/email'])) {
+        if ($this->userModel->findUserByEmailOrUsername($data['name/email'], $data['name/email'], $data['role'])) {
             //User Found
-            $loggedInUser = $this->userModel->login($data['name/email'], $data['usersPwd']);
+            $loggedInUser = $this->userModel->login($data['name/email'], $data['usersPwd'], $data['role']);
             if ($loggedInUser) {
                 //Create session
                 $this->createUserSession($loggedInUser);
@@ -119,10 +121,17 @@ class CustomerUsers
               </script>';
             }
         } else {
-            echo '<script>
-                    alert("No user found");
+            if ($role === 'admin') {
+                echo '<script>
+                    alert("admin not found");
+                    window.location.href = "../login.php";
+                  </script>';
+            } else {
+                echo '<script>
+                    alert("user not found");
                     window.location.href = "../CustomerLogin.php";
                   </script>';
+            }
         }
     }
 
@@ -151,21 +160,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     switch ($_POST['type']) {
         case 'register':
             $init->register();
+            echo 'Hello';
             break;
-        case 'login':
-            $init->login();
+        case 'login_admin':
+            $init->login('admin');
             break;
-        default:
-            redirect("../CustomerFeedback.php");
-    }
-
-} else {
-    switch ($_GET['q']) {
+        case 'login_user':
+            $init->login('user');
+            break;
         case 'logout':
             $init->logout();
             break;
         default:
-            redirect("../CustomerFeedback.php");
+            redirect("../login.php");
     }
 }
-

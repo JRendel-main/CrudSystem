@@ -67,7 +67,7 @@ class Users
         }
 
         //User with the same email or password already exists
-        if ($this->userModel->findUserByEmailOrUsername($data['usersEmail'], $data['usersName'])) {
+        if ($this->userModel->findUserByEmailOrUsername($data['usersEmail'], $data['usersName'], $data['role'])) {
             echo '<script>
                 alert("Username or email already taken");
                 window.location.href = "../signup.php";
@@ -94,7 +94,8 @@ class Users
         //Init data
         $data = [
             'name/email' => trim($_POST['name/email']),
-            'usersPwd' => trim($_POST['usersPwd'])
+            'usersPwd' => trim($_POST['usersPwd']),
+            'role' => $role
         ];
 
 
@@ -106,10 +107,10 @@ class Users
             exit();
         }
 
-        //Check for user/email
-        if ($this->userModel->findUserByEmailOrUsername($data['name/email'], $data['name/email'])) {
+        //Check for user/email by role
+        if ($this->userModel->findUserByEmailOrUsername($data['name/email'], $data['name/email'], $data['role'])) {
             //User Found
-            $loggedInUser = $this->userModel->login($data['name/email'], $data['usersPwd']);
+            $loggedInUser = $this->userModel->login($data['name/email'], $data['usersPwd'], $data['role']);
             if ($loggedInUser) {
                 //Create session
                 $this->createUserSession($loggedInUser, $role);
@@ -120,10 +121,18 @@ class Users
               </script>';
             }
         } else {
-            echo '<script>
-                    alert("No user found");
-                    window.location.href = "../login.php";
-                  </script>';
+            if ($role === 'admin') {
+                echo '<script>
+                alert("User not found");
+                window.location.href = "../login.php";
+              </script>';
+            } else {
+                echo '<script>
+                alert("User not found");
+                window.location.href = "../customerlogin.php";
+              </script>';
+
+            }
         }
     }
 
@@ -136,7 +145,7 @@ class Users
         if ($role == 'admin') {
             redirect("../AdminInventory.php");
         } else {
-            redirect("../CustomerInventory.php");
+            redirect("../CustomerFeedbacK.php");
         }
     }
 
