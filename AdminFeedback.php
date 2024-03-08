@@ -1,3 +1,13 @@
+<?php
+// check the parameters if the reply is successful
+if (isset($_GET['reply'])) {
+    if ($_GET['reply'] == 'success') {
+        echo "<script>alert('Reply sent successfully!');</script>";
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -70,31 +80,31 @@
 
                     while ($row = mysqli_fetch_assoc($result)) {
                         ?>
-                <div class="card mb-3">
-                    <div class="card-header">
-                        Feedback from
-                        <?php echo $row['Email']; ?>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title"><strong>
-                                <?php echo $row['FeedbackTitle']; ?>
-                            </strong></h5>
-                        <p class="card-text">
-                            <?php echo $row['FeedbackContent']; ?>
-                        </p>
-                        <!-- Add form for reply here -->
-                        <form method="post" action="reply_handler.php">
-                            <input type="hidden" name="feedback_id" value="<?php echo $row['FeedbackID']; ?>">
-                            <div class="form-group">
-                                <label for="reply">Reply:</label>
-                                <textarea class="form-control" id="reply" name="reply"
-                                    rows="3"><?php echo $row['reply']; ?></textarea>
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                Feedback from
+                                <?php echo $row['Email']; ?>
                             </div>
-                            <button type="submit" class="btn btn-primary">Reply</button>
-                        </form>
-                    </div>
-                </div>
-                <?php
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>
+                                        <?php echo $row['FeedbackTitle']; ?>
+                                    </strong></h5>
+                                <p class="card-text">
+                                    <?php echo $row['FeedbackContent']; ?>
+                                </p>
+                                <!-- Add form for reply here -->
+                                <form method="post" action="reply_handler.php">
+                                    <input type="hidden" name="feedback_id" value="<?php echo $row['FeedbackID']; ?>">
+                                    <div class="form-group">
+                                        <label for="reply">Reply:</label>
+                                        <textarea class="form-control" id="reply" name="reply"
+                                            rows="3"><?php echo $row['reply']; ?></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Reply</button>
+                                </form>
+                            </div>
+                        </div>
+                        <?php
                     }
                 } else {
                     echo "No feedbacks found.";
@@ -107,7 +117,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous">
-    </script>
+        </script>
     <script src="AdminInventory.js"></script>
 </body>
 

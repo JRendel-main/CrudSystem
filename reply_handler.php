@@ -23,7 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (mysqli_query($conn, $sql)) {
-        header('Location: AdminFeedback.php');
+        // add parameter to the URL to indicate success
+        header("Location: AdminFeedback.php?reply=success");
     } else {
         echo "Error: " . $sql . "<br>" . mysqli_error($conn);
     }
