@@ -123,9 +123,6 @@ if (isset($_GET["editproduct"])) {
 
             <button class="btn btn-primary btn-custom-position" type="button" data-bs-toggle="modal"
                 data-bs-target="#addProductModal">ADD PRODUCT</button>
-
-
-
             <div class="container">
                 <div class="row">
                     <!-- Product Cards -->
@@ -191,10 +188,6 @@ if (isset($_GET["editproduct"])) {
                         <?php
                     }
                     ?>
-
-
-
-
                 </div>
             </div>
 
@@ -268,9 +261,14 @@ if (isset($_GET["editproduct"])) {
                         <div class=" mb-3">
                             <label for="productImage" class="form-label">Product
                                 Image</label>
-                            <input type="file" class="form-control" id="product_image" accept="image/*"
-                                name="product_image">
+                            <input type="file" class="form-control" id="product_image_edit" accept="image/*"
+                                name="product_image" disabled>
                         </div>
+                        <div class="mb-3">
+                            <input type="checkbox" id="changeImage" name="changeImage" value="changeImage">
+                            <label for="changeImage">Change Image</label>
+                        </div>
+                        <input type="hidden" id="product_image_old" name="product_image_old">
                         <div class="mb-3">
                             <label for="productCategory" class="form-label">Product
                                 Category</label>

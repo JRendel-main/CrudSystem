@@ -43,4 +43,15 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteProductid.value = productId;
         });
     });
+
+    // add event listener if user checks the checkbox on change product photo
+    const changePhotoCheckbox = document.getElementById('changeImage');
+    const productImageInput = document.getElementById('product_image_edit');
+    changePhotoCheckbox.addEventListener('change', function () {
+        if (this.checked) {
+            productImageInput.disabled = false;
+        } else {
+            productImageInput.disabled = true;
+        }
+    });
 });
