@@ -58,13 +58,26 @@ require_once 'helpers/conn_helpers.php';
             <div class="row">
                 <div class="col-md-12">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <h2>Our Products</h2>
+                        </div>
+                        <div class="col-md-6">
+                            <form method="GET">
+                                <input type="text" class="form-control-group" name="search"
+                                    placeholder="Search products..." required>
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </form>
                         </div>
                     </div>
                     <div class="row">
                         <?php
-                        $sql = "SELECT * FROM product_table";
+                        if (isset($_GET['search'])) {
+                            $search = $_GET['search'];
+                            // Modify your SQL query to filter based on search query
+                            $sql = "SELECT * FROM product_table WHERE product_name LIKE '%$search%'";
+                        } else {
+                            $sql = 'SELECT * FROM product_table';
+                        }
                         $result = mysqli_query($conn, $sql);
                         if (mysqli_num_rows($result) > 0) {
                             while ($row = mysqli_fetch_assoc($result)) {

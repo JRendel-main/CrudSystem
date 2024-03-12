@@ -103,6 +103,11 @@ if (isset($_GET["editproduct"])) {
         <div class="main p-3">
             <div class="text-center mb-4">
                 <h1 class="inventory-title">Inventory</h1>
+                <form method="GET">
+                    <input type="text" class="form-control-group" name="search" placeholder="Search products..."
+                        required>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
             </div>
 
             <!-- Sort by Category dropdown -->
@@ -119,15 +124,19 @@ if (isset($_GET["editproduct"])) {
 
                 </ul>
             </div>
-
-
             <button class="btn btn-primary btn-custom-position" type="button" data-bs-toggle="modal"
                 data-bs-target="#addProductModal">ADD PRODUCT</button>
             <div class="container">
                 <div class="row">
                     <!-- Product Cards -->
                     <?php
-                    $sql = 'SELECT * FROM product_table';
+                    if (isset($_GET['search'])) {
+                        $search = $_GET['search'];
+                        // Modify your SQL query to filter based on search query
+                        $sql = "SELECT * FROM product_table WHERE product_name LIKE '%$search%'";
+                    } else {
+                        $sql = 'SELECT * FROM product_table';
+                    }
                     $result = mysqli_query($conn, $sql);
                     while ($row = mysqli_fetch_assoc($result)) {
                         $product_id = $row['product_id'];
